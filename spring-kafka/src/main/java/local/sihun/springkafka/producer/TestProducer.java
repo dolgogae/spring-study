@@ -22,8 +22,8 @@ import java.util.concurrent.TimeoutException;
 @RequiredArgsConstructor
 public class TestProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
-    private final RoutingKafkaTemplate routingKafkaTemplate;
-    private final ReplyingKafkaTemplate<String, String, String> replyingKafkaTemplate;
+//    private final RoutingKafkaTemplate routingKafkaTemplate;
+//    private final ReplyingKafkaTemplate<String, String, String> replyingKafkaTemplate;)
 
     public void async(String topic, String message){
         ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, message);
@@ -40,26 +40,26 @@ public class TestProducer {
             }
         });
     }
-
-    public void sync(String topic, String message) throws ExecutionException, InterruptedException, TimeoutException {
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, message);
-        future.get(10, TimeUnit.SECONDS);
-        System.out.println("Success to send sync message");
-    }
-
-    public void routingSend(String topic, String message){
-        routingKafkaTemplate.send(topic, message);
-    }
-
-    public void byteRoutingSend(String topic, byte[] message){
-        routingKafkaTemplate.send(topic, message);
-    }
-
-    public void replyingSend(String topic, String message) throws ExecutionException, InterruptedException, TimeoutException {
-        ProducerRecord<String, String> record = new ProducerRecord<>(topic, message);
-        RequestReplyFuture<String, String, String> replyFuture = replyingKafkaTemplate.sendAndReceive(record);
-
-        ConsumerRecord<String, String> consumerRecord = replyFuture.get(10, TimeUnit.SECONDS);
-        System.out.println(consumerRecord.value());
-    }
+//
+//    public void sync(String topic, String message) throws ExecutionException, InterruptedException, TimeoutException {
+//        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, message);
+//        future.get(10, TimeUnit.SECONDS);
+//        System.out.println("Success to send sync message");
+//    }
+//
+//    public void routingSend(String topic, String message){
+//        routingKafkaTemplate.send(topic, message);
+//    }
+//
+//    public void byteRoutingSend(String topic, byte[] message){
+//        routingKafkaTemplate.send(topic, message);
+//    }
+//
+//    public void replyingSend(String topic, String message) throws ExecutionException, InterruptedException, TimeoutException {
+//        ProducerRecord<String, String> record = new ProducerRecord<>(topic, message);
+//        RequestReplyFuture<String, String, String> replyFuture = replyingKafkaTemplate.sendAndReceive(record);
+//
+//        ConsumerRecord<String, String> consumerRecord = replyFuture.get(10, TimeUnit.SECONDS);
+//        System.out.println(consumerRecord.value());
+//    }
 }

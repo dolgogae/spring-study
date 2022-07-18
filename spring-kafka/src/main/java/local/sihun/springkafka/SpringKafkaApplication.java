@@ -10,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -47,15 +48,40 @@ public class SpringKafkaApplication {
 //		};
 //	}
 
+//
+//	@Bean
+//	public ApplicationRunner runner(TestProducer testProducer){
+//		return args -> {
+//			testProducer.async("test.topic1", "hello kafka producer async" );
+//			testProducer.sync("test.topic1", "hello kafka producer sync");
+//			testProducer.routingSend("test.topic3", "hello kafka string send");
+//			testProducer.byteRoutingSend("test.bytes", "hello kafka byte send".getBytes(StandardCharsets.UTF_8));
+//			testProducer.replyingSend("test.topic.request", "Ping test");
+//		};
+//	}
 
 	@Bean
-	public ApplicationRunner runner(TestProducer testProducer){
+	public ApplicationRunner runner(TestProducer testProducer,
+									KafkaMessageListenerContainer<String, String> kafkaMessageListenerContainer){
 		return args -> {
-			testProducer.async("test.topic1", "hello kafka producer async" );
-			testProducer.sync("test.topic1", "hello kafka producer sync");
-			testProducer.routingSend("test.topic3", "hello kafka string send");
-			testProducer.byteRoutingSend("test.bytes", "hello kafka byte send".getBytes(StandardCharsets.UTF_8));
-			testProducer.replyingSend("test.topic.request", "Ping test");
+			testProducer.async("test.topic4", "hello, kafka container");
+			kafkaMessageListenerContainer.start();
+			Thread.sleep(1_000L);
+
+			// 멈추기
+			System.out.println("--- pause ---");
+			kafkaMessageListenerContainer.pause();
+			Thread.sleep(5_000L);
+
+			testProducer.async("test.topic4", "hello, secondly kafka container");
+
+			// 다시 읽기
+			kafkaMessageListenerContainer.resume();
+			Thread.sleep(1_000L);
+
+			// 중단
+			System.out.println("--- stop ---");20
+			kafkaMessageListenerContainer.stop();
 		};
 	}
 }
