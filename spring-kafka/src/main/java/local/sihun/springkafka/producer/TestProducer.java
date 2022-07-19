@@ -1,5 +1,6 @@
 package local.sihun.springkafka.producer;
 
+import local.sihun.springkafka.model.Animal;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -21,7 +22,9 @@ import java.util.concurrent.TimeoutException;
 @Service
 @RequiredArgsConstructor
 public class TestProducer {
+
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Animal> kafkaJsonTemplate;
 //    private final RoutingKafkaTemplate routingKafkaTemplate;
 //    private final ReplyingKafkaTemplate<String, String, String> replyingKafkaTemplate;)
 
@@ -39,6 +42,10 @@ public class TestProducer {
                 System.out.println("Fail to send message. record="+ex.getFailedProducerRecord());
             }
         });
+    }
+
+    public void async(String topic, Animal animal) {
+        kafkaJsonTemplate.send(topic, animal);
     }
 //
 //    public void sync(String topic, String message) throws ExecutionException, InterruptedException, TimeoutException {

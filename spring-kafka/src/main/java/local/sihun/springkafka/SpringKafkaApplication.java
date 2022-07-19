@@ -1,5 +1,6 @@
 package local.sihun.springkafka;
 
+import local.sihun.springkafka.model.Animal;
 import local.sihun.springkafka.producer.TestProducer;
 import org.apache.kafka.clients.KafkaClient;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -23,13 +24,20 @@ public class SpringKafkaApplication {
 		SpringApplication.run(SpringKafkaApplication.class, args);
 	}
 
+	@Bean
+	public ApplicationRunner runner(TestProducer testProducer){
+		return args -> {
+			//			testProducer.async("test.topic4", "hello, test4 Listener");
+			testProducer.async("test.topic.animal", new Animal("puppy", 5));
+		};
+	}
 //	@Bean
 //	public ApplicationRunner runner(KafkaTemplate<String, String> kafkaTemplate){
 //		return args -> {
 //			kafkaTemplate.send("test.topic1", "hello, kafka");
 //		};
-//	}
 
+//	}
 //	@Bean
 //	public ApplicationRunner runner(AdminClient adminClient){
 //		return args -> {
@@ -46,8 +54,8 @@ public class SpringKafkaApplication {
 //				}
 //			}
 //		};
-//	}
 
+//	}
 //
 //	@Bean
 //	public ApplicationRunner runner(TestProducer testProducer){
@@ -59,29 +67,30 @@ public class SpringKafkaApplication {
 //			testProducer.replyingSend("test.topic.request", "Ping test");
 //		};
 //	}
+//
+//	@Bean
+//	public ApplicationRunner runner(TestProducer testProducer,
+//									KafkaMessageListenerContainer<String, String> kafkaMessageListenerContainer){
+//		return args -> {
+//			testProducer.async("test.topic4", "hello, kafka container");
+//			kafkaMessageListenerContainer.start();
+//			Thread.sleep(1_000L);
+//
+//			// 멈추기
+//			System.out.println("--- pause ---");
+//			kafkaMessageListenerContainer.pause();
+//			Thread.sleep(5_000L);
+//
+//			testProducer.async("test.topic4", "hello, secondly kafka container");
+//
+//			// 다시 읽기
+//			kafkaMessageListenerContainer.resume();
+//			Thread.sleep(1_000L);
+//
+//			// 중단
+//			System.out.println("--- stop ---");
+//			kafkaMessageListenerContainer.stop();
+//		};
 
-	@Bean
-	public ApplicationRunner runner(TestProducer testProducer,
-									KafkaMessageListenerContainer<String, String> kafkaMessageListenerContainer){
-		return args -> {
-			testProducer.async("test.topic4", "hello, kafka container");
-			kafkaMessageListenerContainer.start();
-			Thread.sleep(1_000L);
-
-			// 멈추기
-			System.out.println("--- pause ---");
-			kafkaMessageListenerContainer.pause();
-			Thread.sleep(5_000L);
-
-			testProducer.async("test.topic4", "hello, secondly kafka container");
-
-			// 다시 읽기
-			kafkaMessageListenerContainer.resume();
-			Thread.sleep(1_000L);
-
-			// 중단
-			System.out.println("--- stop ---");20
-			kafkaMessageListenerContainer.stop();
-		};
-	}
+//	}
 }
