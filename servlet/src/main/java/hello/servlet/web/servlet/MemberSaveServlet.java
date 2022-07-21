@@ -23,6 +23,7 @@ public class MemberSaveServlet extends HttpServlet {
         int age = Integer.parseInt(req.getParameter("age"));
 
         Member member = new Member(username,age);
+        memberRepository.save(member);
         resp.setContentType("text/html");
         resp.setCharacterEncoding("utf-8");
         PrintWriter w = resp.getWriter();
