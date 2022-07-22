@@ -1,7 +1,6 @@
 package hello.servlet.basic;
 
 import java.io.IOException;
-import java.rmi.server.ServerCloneException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
