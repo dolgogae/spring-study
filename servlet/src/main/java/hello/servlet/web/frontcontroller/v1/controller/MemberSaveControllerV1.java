@@ -11,7 +11,7 @@ import hello.servlet.domain.member.Member;
 import hello.servlet.domain.member.MemberRepository;
 import hello.servlet.web.frontcontroller.v1.ControllerV1;
 
-public class MemberSaveController implements ControllerV1{
+public class MemberSaveControllerV1 implements ControllerV1{
 
     private MemberRepository memberRepository = MemberRepository.getInstance();
 
