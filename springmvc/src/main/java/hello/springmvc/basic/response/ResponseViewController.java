@@ -7,6 +7,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class ResponseViewController {
+    // 타임리프 관련 추가 설정 방법 사이트
+    // https://docs.spring.io/spring-boot/docs/2.4.3/reference/html/appendix-application-properties.html#common-application-properties-templating
 
     @RequestMapping("/response-view-v1")
     public ModelAndView responseViewV1(){
@@ -28,6 +30,5 @@ public class ResponseViewController {
         // 반환값이 없으면 mapping된 뷰템플릿으로 간다.
         model.addAttribute("data", "hello!");        
     }
-
     
 }
