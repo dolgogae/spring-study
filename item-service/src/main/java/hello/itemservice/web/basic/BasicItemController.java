@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -40,9 +37,52 @@ public class BasicItemController {
         return "/basic/addForm";
     }
 
+//    @PostMapping("/add")
+    public String addItemV1(@RequestParam String itemName,
+                       @RequestParam int price,
+                       @RequestParam Integer quantity,
+                       Model model){
+
+        Item item = new Item();
+        item.setItemName(itemName);
+        item.setPrice(price);
+        item.setQuantity(quantity);
+
+        itemRepository.save(item);
+
+        model.addAttribute("item", item);
+        return "basic/addForm";
+    }
+
+//    @PostMapping("/add")
+    public String addItemV2(@ModelAttribute("item") Item item/*, Model model*/){
+        // @ModelAttribute에서 추가해준 이름으로 model에 매핑된다.
+        // 1. 요청 파라미터 처리
+        // 2. model에 attribute 추
+
+        itemRepository.save(item);
+//        model.addAttribute("item", item);
+        // 따라서 생략해도 상관없다.
+
+        return "basic/addForm";
+    }
+
+//    @PostMapping("/add")
+    public String addItemV3(@ModelAttribute Item item){
+        // 변수의 객체의 맨 앞을 소문자로 바꾼것이 model의 attribute에 넣어준다.
+
+        itemRepository.save(item);
+//        model.addAttribute("item", item);
+
+        return "basic/addForm";
+    }
+
     @PostMapping("/add")
-    public String save(){
-        return "/basic/addForm";
+    public String addItemV4(Item item){
+        // @ModelAttribute를 생략할수도 있다.
+        itemRepository.save(item);
+
+        return "basic/addForm";
     }
 
     @PostConstruct
