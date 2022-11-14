@@ -1,4 +1,4 @@
-package hello.repository;
+package hello.jdbc.repository;
 
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
@@ -11,7 +11,7 @@ import hello.jdbc.repository.MemberRepositoryV0;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MemberRepositoryTest {
+public class MemberRepositoryTestV0 {
 
     MemberRepositoryV0 repository = new MemberRepositoryV0();
 
