@@ -24,13 +24,15 @@ public class MemberServiceV3_1 {
     private final PlatformTransactionManager transactionManager;
     private final MemberRepositoryV3 memberRepository;
 
-    public void accountTransfer(String fromId, String toId, int money) throws SQLException{
+    public void accountTransfer(String fromId, String toId, int money){
         // start transaction
         // 트랜잭션을 시작하려면 데이터베이스 커넥션이 필요하다. -> transactionManager는 내부적으로 DataSource를 가지고 있다.(생성자를 통해)
         // 커넥션을 수동 커밋 모드로 변경후 실제 데이터베이스 트랜잭션을 시작한다.
         // 커넥션을 트랜잭션 동기화 매니저에 보관한다. + (con.setAutoCommit(false))
         // 트랜잭션 동기화 매니저는 스레드 로컨에 커넥션을 보관하여 멀티 스레드 환경에 안전하게 커넥션 보관
-        // 커넥션 호출(MemberRepositoryV3.getConnection 소스코드 확인)시에 데이터 접근 로직(현재 예시는 JDBC)에서 앞선 트랜잭션 동기화 매니저에서 저장된 커넥션을 가져와 사용하게 된다. 
+        // 커넥션 호출(MemberRepositoryV3.getConnection 소스코드 확인)시에 데이터 접근 로직(현재 예시는 JDBC)에서 앞선 트랜잭션 동기화 매니저에서 저장된 커넥션을 가져와 사용하게 된다.
+
+        // 트랜잭션에서 중복코드(try, catch 등)를 해결하기 위한 TransactionTemplate을 제공한다.
         TransactionStatus status = transactionManager.getTransaction(new DefaultTransactionDefinition());
 
         try{
