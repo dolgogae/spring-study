@@ -1,12 +1,8 @@
-package hello.jdbc.exception;
-
-import com.jayway.jsonpath.spi.cache.Cache;
+package hello.jdbc.exception.basic;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import hello.jdbc.exception.CheckedTest.Repository;
-import hello.jdbc.exception.CheckedTest.Service;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
