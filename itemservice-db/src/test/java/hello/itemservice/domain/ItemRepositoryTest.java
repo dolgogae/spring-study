@@ -70,6 +70,7 @@ class ItemRepositoryTest {
         itemRepository.save(item3);
 
         //둘 다 없음 검증
+        // if change order, error
         test(null, null, item1, item2, item3);
         test("", null, item1, item2, item3);
 

@@ -15,6 +15,7 @@ public class TestDataInit {
 
     /**
      * 확인용 초기 데이터 추가
+     * 스프링이 실행할 준비가 되었을때 실행되는 메서드(ApplicationReadyEvent)
      */
     @EventListener(ApplicationReadyEvent.class)
     public void initData() {
