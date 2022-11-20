@@ -9,7 +9,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 
 
-@Import(MemoryConfig.class)
+//@Import(MemoryConfig.class)
+//@Import(JdbcTemplateV1Config.class)
+//@Import(JdbcTemplateV2Config.class)
+@Import(JdbcTemplateV3Config.class)
 // 수동으로 component scan을 해준다. 안할 경우에 hello하위 모든 것을 scan할 수 있다.
 @SpringBootApplication(scanBasePackages = "hello.itemservice.web")
 public class ItemServiceApplication {

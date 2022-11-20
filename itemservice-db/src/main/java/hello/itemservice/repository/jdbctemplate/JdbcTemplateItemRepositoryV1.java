@@ -72,6 +72,17 @@ public class JdbcTemplateItemRepositoryV1 implements ItemRepository {
         }
     }
 
+    /**
+     * template.query()를 사용한다.(보통 하나 이상일때 사용한다.)
+     * ResultSet을 반환해준다.
+     *
+     * JDBC의 동적쿼리를 사용하려면 굉장히 복잡한 분기문이 생기게 된다.
+     * 예를 들어 어떤 경우에는 앞에 and가 붙을 수도 있고,
+     * 어떤 경우는 where를 사용해야하고 어떤 경우에는 like를 사용해야 할 수도 있다.
+     * 따라서 동적쿼리를 JDBC로 만들기는 굉장한 어려움이 있다.
+     *
+     * MyBatis를 사용하면 동적 쿼리를 쉽게 작성할 수 있다.
+     */
     @Override
     public List<Item> findAll(ItemSearchCond cond) {
         String itemName = cond.getItemName();
