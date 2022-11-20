@@ -17,7 +17,7 @@ import java.util.Optional;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class JpaItemRepository implements ItemRepository {
+public class JpaItemRepository<I, L extends Number> implements ItemRepository {
 
     /**
      * EntityManager는 순수 JPA 기술이고 스프링과는 관계가 없다.
