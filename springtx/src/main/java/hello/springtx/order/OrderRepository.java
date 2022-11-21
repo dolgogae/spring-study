@@ -1,2 +1,6 @@
-package hello.springtx.order;public class OrderRepository {
+package hello.springtx.order;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface OrderRepository extends JpaRepository<Order, Long> {
 }

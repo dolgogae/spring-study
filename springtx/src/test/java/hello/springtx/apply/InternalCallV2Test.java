@@ -1,5 +1,6 @@
 package hello.springtx.apply;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,15 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import javax.transaction.Transactional;
 
 /**
- * 대상객체 내부에서 호출하게 된다면 @Transactional이 있어도 트랜잭션이 적용되지 않는다.
+ * 스프링에서 public인 메서드만 트랜잭션을 허용했다.
+ * 왜냐하면 내부 메서드 호출을 프록시를 통해서 호출되지도 않고,
+ * 필요없는 것까지 과도하게 트랜잭션이 걸릴수 있기 때문이다.
+ *
+ * 추가적으로 public이 비즈니스 로직의 시작이 되기 때문에 보통 트랜잭션이 필요하고 나머지는 필요한 경우가 많지 않다는 점도 있다.
  */
 @Slf4j
 @SpringBootTest
-public class InternalCallV1Test {
+public class InternalCallV2Test {
 
     @Autowired CallService callService;
 
@@ -25,25 +30,16 @@ public class InternalCallV1Test {
     }
 
     /**
-     * 이것은 프록시 객체를 통해서 호출해주기 때문에
-     * 트랜잭션이 문제없이 적용된다.
-     */
-    @Test
-    void internalCall(){
-        callService.internal();
-    }
-
-    /**
-     * 다음처럼 호출하게 되면 @Transactional이 트랜잭션을 걸어주지 않는다.
-     * 왜냐하면 프록시 객체를 통해서 호출하는 것이 아닌 내부적으로 호출하기 때문에
-     * 트랜잭션을 거는 AOP가 걸리지 않는 것이다.
+     * 2022-11-21 15:53:35.362  INFO 14612 --- [    Test worker] h.s.a.InternalCallV2Test$CallService     : call external
+     * 2022-11-21 15:53:35.362  INFO 14612 --- [    Test worker] h.s.a.InternalCallV2Test$CallService     : tx Active = false
+     * 2022-11-21 15:53:35.362  INFO 14612 --- [    Test worker] h.s.a.InternalCallV2Test$CallService     : tx readOnly = false
+     * 2022-11-21 15:53:35.445 TRACE 14612 --- [    Test worker] o.s.t.i.TransactionInterceptor           : Getting transaction for [hello.springtx.apply.InternalCallV2Test$InternalService.internal]
+     * 2022-11-21 15:53:35.457  INFO 14612 --- [    Test worker] hello.springtx.apply.InternalCallV2Test  : call internal
+     * 2022-11-21 15:53:35.457  INFO 14612 --- [    Test worker] hello.springtx.apply.InternalCallV2Test  : tx Active = true
+     * 2022-11-21 15:53:35.458  INFO 14612 --- [    Test worker] hello.springtx.apply.InternalCallV2Test  : tx readOnly = false
      *
-     * 2022-11-21 15:43:00.168  INFO 14184 --- [    Test worker] h.s.a.InternalCallV1Test$CallService     : call external
-     * 2022-11-21 15:43:00.169  INFO 14184 --- [    Test worker] h.s.a.InternalCallV1Test$CallService     : tx Active = false
-     * 2022-11-21 15:43:00.169  INFO 14184 --- [    Test worker] h.s.a.InternalCallV1Test$CallService     : tx readOnly = false
-     * 2022-11-21 15:43:00.170  INFO 14184 --- [    Test worker] h.s.a.InternalCallV1Test$CallService     : call internal
-     * 2022-11-21 15:43:00.171  INFO 14184 --- [    Test worker] h.s.a.InternalCallV1Test$CallService     : tx Active = false
-     * 2022-11-21 15:43:00.171  INFO 14184 --- [    Test worker] h.s.a.InternalCallV1Test$CallService     : tx readOnly = false
+     * 다음과 같이 internal을 별도로 만들어주었기 때문에 프록시를 호출해 정상적으로 트랜잭션을 호출해줬다.
+     * 별도의 클래스로 분리하는 방법이 실무에서 가장 합리적이다.
      */
     @Test
     void externalCall(){
@@ -55,31 +51,42 @@ public class InternalCallV1Test {
 
         @Bean
         CallService callService(){
-            return new CallService();
+            return new CallService(internalService());
+        }
+
+        @Bean
+        InternalService internalService(){
+            return new InternalService();
         }
     }
 
-    /**
-     * external을 호출하고 그 내부에서 internal을 호출하는 구조로 설계된 클래스이다.
-     * external은 트랜잭션이 필요없고, internal은 트랜잭션이 필요한 상황이다.
-     *
-     * 가장 단순한 방법으로 internal 메서드를 별도의 클래스로 분리하는 해결방법이 있다.
-     */
     @Slf4j
+    @RequiredArgsConstructor
     static class CallService{
+
+        private final InternalService internalService;
 
         public void external(){
             log.info("call external");
             printTxInfo();
-            internal();
+            internalService.internal();
         }
+
+        private void printTxInfo(){
+            boolean txActive = TransactionSynchronizationManager.isActualTransactionActive();
+            log.info("tx Active = {}", txActive);
+            boolean readOnly = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
+            log.info("tx readOnly = {}", readOnly);
+        }
+    }
+
+    static class InternalService{
 
         @Transactional
         public void internal(){
             log.info("call internal");
             printTxInfo();
         }
-
         private void printTxInfo(){
             boolean txActive = TransactionSynchronizationManager.isActualTransactionActive();
             log.info("tx Active = {}", txActive);

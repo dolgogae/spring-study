@@ -46,6 +46,7 @@ public class TxBasicTest {
      * `@Transactional이 있으면 트랜잭션을 활성화하게 된다.
      *
      * class 레벨로 올라간다면 밑의 모든 메서드가 트랜잭션이 적용된다.
+     * 또한 스프링 빈에는 트랜잭션 프록시 객체를 등록하게 된다.
      */
     @Slf4j
     static class BasicService{
