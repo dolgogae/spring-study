@@ -8,6 +8,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * 서블릿은 기본적으로 HTTPServlet을 상속받아야 한다.
+ * urlPattern 경로대로 생성된다.
+ * 
+ * 웹브라우져가 HTTP 요청, 응답 메시지를 생성한다.
+ * 
+ * HTTPServletRequest
+ * 서블릿이 개발자 대신 요청을 받아 객체를 생성해주는 것
+ * 
+ * 
+ */
 @WebServlet(name = "helloServlet", urlPatterns = "/hello")
 public class HelloServlet extends HttpServlet{
     
