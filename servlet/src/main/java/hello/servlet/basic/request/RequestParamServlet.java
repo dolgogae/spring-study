@@ -28,6 +28,7 @@ public class RequestParamServlet extends HttpServlet {
         System.out.println("[전체 파라미터 조회] - end");
         System.out.println();
 
+        // 가장많이 사용하는 형식이다.
         System.out.println("[단일 파라미터 조회]");
         String username = request.getParameter("username");
         String age = request.getParameter("age");

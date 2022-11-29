@@ -12,6 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.util.StreamUtils;
 
+/**
+ * API 방식을 이용한 데이터 전송
+ * HTTP 바디에 데이터를 직접 담아서 요청
+ */
 @WebServlet(name = "requestBodyStringServlet", urlPatterns = "/request-body-string")
 public class RequestBodyStringServlet extends HttpServlet{
     
