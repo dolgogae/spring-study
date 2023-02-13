@@ -9,20 +9,20 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * 따로 다른것을 호출해줄 필요없이
+ * response 객체에 그대로 html을 넣어주면 된다.
+ */
 @WebServlet(name = "responseHtmlServlet", urlPatterns = "/response-html")
 public class ResponseHtmlServlet extends HttpServlet{
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+
         // status-line
         response.setStatus(HttpServletResponse.SC_OK);
 
         // response-header
         response.setHeader("Content-type", "text/html;charset=utf-8");
-        // response.setCharacterEncoding("utf-8");
-        // response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-        // response.setHeader("Pragma", "no-cache");
-        // response.setHeader("my-header", "hello");
 
         PrintWriter writer = response.getWriter();
         writer.println("<html>");

@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+/**
+ * 저장된 멤버의 리스트를 보여주는 페이지
+ */
 @WebServlet(name = "memberListServlet", urlPatterns = "/servlet/members")
 public class MemberListServlet extends HttpServlet {
 
@@ -23,6 +26,7 @@ public class MemberListServlet extends HttpServlet {
 
         resp.setContentType("test/html");
         resp.setCharacterEncoding("utf-8");
+
 
         PrintWriter w = resp.getWriter();
         w.write("<html>");
@@ -47,6 +51,10 @@ public class MemberListServlet extends HttpServlet {
         w.write("
         </tr>");
         */
+
+        /**
+         * 동적으로 여러개의 데이터가 나가야해서 for문을 통해서 해결이 가능하다.
+         */
         for (Member member : members) {
             w.write(" <tr>");
             w.write(" <td>" + member.getId() + "</td>");

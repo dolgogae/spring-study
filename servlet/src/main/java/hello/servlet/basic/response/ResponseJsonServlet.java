@@ -13,6 +13,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import hello.servlet.basic.HelloData;
 
+/**
+ * json 형태로 주고받기
+ * spring으로 넘어가게 되면 객체만 넘겨주면 된다.
+ */
 @WebServlet(name = "responseJsonServlet", urlPatterns = "/response-json")
 public class ResponseJsonServlet extends HttpServlet{
     
@@ -35,7 +39,5 @@ public class ResponseJsonServlet extends HttpServlet{
         String result = objectMapper.writeValueAsString(helloData);
         PrintWriter writer = response.getWriter();
         writer.write(result);
-        
     }
-
 }
