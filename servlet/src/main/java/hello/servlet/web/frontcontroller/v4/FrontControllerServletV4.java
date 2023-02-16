@@ -14,7 +14,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * v3에 비해서 controller가 viewName만 반환한다.
+ * controller를 작성하는 입장에서 훨씬 편해진다.
+ * 
+ * 다음과 같이 modelView를 따로 사용하지 않는다.
+ * model을 파라미터로 넘겼다.
+ */
 @WebServlet(name = "frontControllerServletV4", urlPatterns = "/front-controller/v4/*")
 public class FrontControllerServletV4 extends HttpServlet{
 

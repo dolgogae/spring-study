@@ -31,6 +31,8 @@ public class ControllerV4HandlerAdapter implements MyHandlerAdapter{
 
         String viewName = controller.process(paramMap, model);
 
+        // v4는 ModelView를 사용하지 않아서 직접 만들어줘야 한다.
+        // 이러한 설계로 인해서 유연한 프로그래밍이 가능하다.
         ModelView mv = new ModelView(viewName);
         mv.setModel(model);
 

@@ -23,7 +23,7 @@ public class ControllerV3HandlerAdapter implements MyHandlerAdapter{
     @Override
     public ModelView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws ServletException, IOException {
-        // TODO Auto-generated method stub
+        // 앞서 support에서 걸렀기 때문에 업캐스팅을 일부 허용해주는 부분이다.
         ControllerV3 controller = (ControllerV3)handler;
 
         Map<String, String> paramMap = createParamMap(request);
@@ -36,7 +36,7 @@ public class ControllerV3HandlerAdapter implements MyHandlerAdapter{
         Map<String, String> paramMap = new HashMap<>();
 
         request.getParameterNames().asIterator()
-        .forEachRemaining(paramName -> paramMap.put(paramName, request.getParameter(paramName)));
+                .forEachRemaining(paramName -> paramMap.put(paramName, request.getParameter(paramName)));
         return paramMap;
     }
     

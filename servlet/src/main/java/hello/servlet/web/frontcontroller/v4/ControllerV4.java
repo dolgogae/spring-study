@@ -5,7 +5,6 @@ import java.util.Map;
 public interface ControllerV4 {
 
     /**
-     * 
      * @param paramMap
      * @param model
      * @return viewName
