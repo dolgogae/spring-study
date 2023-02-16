@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletResponse;
  * 둘에는 변경의 라이프 사이클이 다르다는 점에서 문제가 있다.
  *
  * spring mvc는 뷰와 렌더링 모델에 대한 것을 분리하고 비즈니스 로직 또한 따로 분하여 이러한 문제점을 해결한다.
+ *
+ * request, response가 사용되지 않는점과
+ * 컨트롤러에서 공통 처리가 어렵다는 문제가 있다.(반복되는 것을 계속 호출해야하는 문제)
  */
 @WebServlet(name = "mvcMemberFormServlet", urlPatterns = "/servlet-mvc/members/new-form")
 public class MvcMemberFormServlet extends HttpServlet{
