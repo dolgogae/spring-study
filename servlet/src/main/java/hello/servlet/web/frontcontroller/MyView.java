@@ -7,6 +7,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * 뷰를 생성할때 공통되는 부분을 클래스로 분리한다.
+ * 이후에 controller에서 화면으로 렌더링 되는 것을 MyView로 넘겨줘 역할을 분리하는 것이다.
+ */
 public class MyView {
 
     private String viewPath;
