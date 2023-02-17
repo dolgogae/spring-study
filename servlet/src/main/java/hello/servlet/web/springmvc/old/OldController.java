@@ -9,6 +9,12 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * 예전 방식은 컴포넌트의 이름을 가지고 url매핑을 해주었다.
+ *
+ * 스프링 부트는 InternalResourceViewResolver라는 뷰 리졸버를 자동으로 등록한다.
+ * 이때 프로퍼티의 spring.mvc.view.prefix, spring.mvc.view.suffix 설정정보를 사용해서 등록한다
+ *
+ * new-form이라는 뷰 이름으로 viewResolver를 호출
+ * InternalResourceViewResolver -> InternalResourceView -> forward()
  */
 @Component("/springmvc/old-controller")
 public class OldController implements Controller {

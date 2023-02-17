@@ -4,7 +4,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-
+/**
+ * @RequestMapping
+ * - RequestMappingHandlerMapping
+ * - RequestMappingHandlerAdapter
+ *
+ * @Component와 @RequestMapping을 합한 것이 @Controller가 된다.
+ */
 @Controller
 public class SpringMemberFormControllerV1 {
 

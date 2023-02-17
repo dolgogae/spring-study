@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 여기서는 GET, POST방식을 구분하고 있지 않다.ㄴ
+ */
 @Controller
 @RequestMapping("/springmvc/v3/members")
 public class SpringMemberControllerV3 {
@@ -21,6 +24,9 @@ public class SpringMemberControllerV3 {
     }
 
 
+    /**
+     * RequestParam으로 직접 변수를 받아올 수 있다.
+     */
 //    @RequestMapping(value = "/save", method = RequestMethod.POST)
     @PostMapping("/save")
     public String save(
@@ -34,7 +40,6 @@ public class SpringMemberControllerV3 {
         model.addAttribute("member", member);
         return "save-result";
     }
-
 
 //    @RequestMapping(method = RequestMethod.GET)
     @GetMapping
