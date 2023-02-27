@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/mapping/users")
+@RequestMapping("/mapping/users")   // 해당 컨트롤러들 앞에 모두 적용되는 url
 public class MappingClassController {
-    
+
     @GetMapping
     public String user(){
         return "get users";

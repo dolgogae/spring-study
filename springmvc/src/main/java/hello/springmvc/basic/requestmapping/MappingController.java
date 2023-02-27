@@ -2,6 +2,7 @@ package hello.springmvc.basic.requestmapping;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -9,7 +10,11 @@ public class MappingController {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    @RequestMapping(value = {"/hello-basic", "hello-go"}, method = RequestMethod.GET)
+    /**
+     * 두개를 매핑하는것도 가능하다.
+     * method를 매핑하지 않을땐 어느것으로 보내도 ok가 된다.
+     */
+    @RequestMapping(value = {"/hello-basic", "/hello-go"}, method = RequestMethod.GET)
     public String helloBasic(){
         log.info("helloBasic");
         return "ok";
@@ -44,11 +49,11 @@ public class MappingController {
      * 변수명이 같으면 생략 가능
      * @PathVariable("userId") String userId -> @PathVariable userId
      * /mapping/userA
-     * 많이 사용된다.
-     * 변수명과 동일하면 같게 쓰면된다.
+     * 제일 많이 사용된다.
+     * url 파라미터와 변수명이 동일하면 알아서 인식해서 넘겨준다.
      */
     @GetMapping("/mapping/{userId}")
-    public String mappingPath(@PathVariable String userId){
+    public String mappingPath(@PathVariable/*("userId")*/ String userId){
         log.info("mappingPath userId={}", userId);
         return "ok";
     }
@@ -57,8 +62,7 @@ public class MappingController {
      * PathVariable 사용 다중
      */
     @GetMapping("/mapping/users/{userId}/orders/{orderId}")
-    public String mappingPath(@PathVariable String userId, @PathVariable Long
-            orderId) {
+    public String mappingPath(@PathVariable String userId, @PathVariable Long orderId) {
         log.info("mappingPath userId={}, orderId={}", userId, orderId);
         return "ok";
     }
@@ -97,7 +101,8 @@ public class MappingController {
      * consumes="*\/*"
      * MediaType.APPLICATION_JSON_VALUE
      */
-    @PostMapping(value = "/mapping-consume", consumes = "application/json")
+//    @PostMapping(value = "/mapping-consume", consumes = "application/json")
+    @PostMapping(value = "/mapping-consume", consumes = MediaType.APPLICATION_JSON_VALUE)
     public String mappingConsumes() {
         log.info("mappingConsumes");
         return "ok";
