@@ -78,6 +78,10 @@ public class BasicItemController {
         return "basic/addForm";
     }
 
+    /**
+     * 해당 컨트롤러로 마무리하게 되면 새로고침을 할때마다 지속적으로 http request가 호출되어서 회원이 추가 등록된다.
+     * 이는 redirect를 호출해서 마무리하면 된다.
+     */
 //    @PostMapping("/add")
     public String addItemV4(Item item){
         // @ModelAttribute를 생략할수도 있다.
@@ -90,9 +94,14 @@ public class BasicItemController {
     public String addItemV5(Item item){
         itemRepository.save(item);
 
+        // item의 id를 문자 그대로 넣어줬기 때문에 위험하다.
         return "redirect:/basic/items/" + item.getId();
     }
 
+    /**
+     * RedirectAttributes를 사용해서 url의 item id를 안정적으로 넘길 수 있다.
+     * redirect도 쿼리파라미터로 넘겨줄 수 있다.
+     */
     @PostMapping("/add")
     public String addItemV6(Item item, RedirectAttributes redirectAttributes){
         Item saveItem = itemRepository.save(item);
