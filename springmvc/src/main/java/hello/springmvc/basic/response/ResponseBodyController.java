@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 // @ResponseBody
 @RestController
 public class ResponseBodyController {
-    
 
     @GetMapping("/response-body-string-v1")
     public void responseBodyV1(HttpServletResponse response) throws IOException{
@@ -47,9 +46,8 @@ public class ResponseBodyController {
         return new ResponseEntity<>(helloData, HttpStatus.OK);
     }
 
-
-    @ResponseStatus(HttpStatus.OK)
     // @ResponseBody
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/response-body-json-v2")
     public HelloData responseBodyJsonV2(){
         HelloData helloData = new HelloData();

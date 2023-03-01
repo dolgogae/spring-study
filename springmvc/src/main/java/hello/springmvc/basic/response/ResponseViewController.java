@@ -19,12 +19,19 @@ public class ResponseViewController {
         return mav;
     }
 
+    /**
+     * 리턴값이 view의 논리적 이름이 된다.(templates 밑에 있는 경로)
+     */
     @RequestMapping("/response-view-v2")
     public String responseViewV2(Model model){
         model.addAttribute("data", "hello!");        
         return "response/hello";
     }
 
+    /**
+     * 권장하지 않는 방법
+     * 경로이 이름이랑 url을 맞추는 방법
+     */
     @RequestMapping("/response/hello")
     public void responseViewV3(Model model){
         // 반환값이 없으면 mapping된 뷰템플릿으로 간다.

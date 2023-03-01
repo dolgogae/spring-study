@@ -19,12 +19,33 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import hello.springmvc.basic.HelloData;
 import lombok.extern.slf4j.Slf4j;
 
+/* Json을 매칭 */
+
+/**
+ * HttpMessageConverter
+ * http 요청, 응답 둘다 사용된다.
+ * 요청과 응답에 있어서 http 형식으로 변경을 시켜준다.
+ * 기존에 코딩했던 것들 중에 바로 객체를 반환하거나 요청변수를 바로 객체로 받아오는 부분에서 역할을 하게 된다.
+ *
+ * http 요청 데이터
+ * 요청 메시지를 읽을 수 있는 지 확인하기 위해 canRead()를 호출
+ * Content-Type 미디어 타입을 지원하는가?
+ * *미디어타입: application/json...
+ *
+ * http 응답 데이터
+ * 응답 메시지를 쓸 수 있는지 확인하기 위해 canWrite()를 호출
+ * Accept 미디어 타입을 지원하는가?
+ *
+ */
 @Slf4j
 @Controller
 public class RequestBodyJsonController {
     
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * 가장 기본적인 방법
+     */
     @PostMapping("/request-body-json-v1")
     public void requestBodyJsonV1(HttpServletRequest request, HttpServletResponse response) throws IOException{
         ServletInputStream inputStream = request.getInputStream();
@@ -37,6 +58,9 @@ public class RequestBodyJsonController {
         response.getWriter().write("ok");
     }
 
+    /**
+     * 동일하게 RequestBody를 통새서 받을 수 있다.
+     */
     @ResponseBody
     @PostMapping("/request-body-json-v2")
     public String requestBodyJsonV2(@RequestBody String messageBody) throws IOException{
@@ -48,7 +72,10 @@ public class RequestBodyJsonController {
         return "ok";
     }
 
-    // @RequestBody는 생략하면 안된다.
+    /**
+     * @RequestBody는 생략하면 안된다. -> 값이 들어가지 않는다.(@ModelAttribute가 기본적으로 들어가기 때문에 요청 파라미터를 가져가게 된다.)
+     * 바로 HelloData라는 객체로 받는것도 가능하다.
+     */
     @ResponseBody
     @PostMapping("/request-body-json-v3")
     public String requestBodyJsonV3(@RequestBody HelloData helloData){
@@ -66,6 +93,10 @@ public class RequestBodyJsonController {
         return "ok";
     }
 
+    /**
+     * HelloData로 Json 형태로 떨궈주는것도 가능하다.
+     * message converter가 반환하는 것도 적용이 가능하다.
+     */
     @ResponseBody
     @PostMapping("/request-body-json-v5")
     public HelloData requestBodyJsonV5(@RequestBody HelloData helloData){
