@@ -36,6 +36,10 @@ import lombok.extern.slf4j.Slf4j;
  * 응답 메시지를 쓸 수 있는지 확인하기 위해 canWrite()를 호출
  * Accept 미디어 타입을 지원하는가?
  *
+ * 핸들러 어댑터에서 해당 컨트롤러에 관련된 데이터를 만들어 던져주게 된다.
+ * ArgumentResolver를 호출해서 필요한 파라미터의 값을 채워넣게 된다.
+ * 반환값은 ReturnValueHandler에서 처리하게 된다.
+ * 모두 인터페이스로 제공되기 때문에 WebMvcConfigurer를 사용해서 커스텀 확장이 가능하다.
  */
 @Slf4j
 @Controller
