@@ -1,13 +1,28 @@
 package study.querydsl;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import org.apache.catalina.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
+
+import study.querydsl.dto.MemberDto;
+import study.querydsl.dto.QMemberDto;
+import study.querydsl.dto.UserDto;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
 import study.querydsl.entity.QTeam;
@@ -355,5 +370,378 @@ public class QuerydslBasicTest {
 
         boolean loaded = emf.getPersistenceUnitUtil().isLoaded(findMember.getTeam());
         assertThat(loaded).as("패치 조인 미적용").isTrue();
+    }
+
+    /**
+     * 나이가 가장 많은 회원 조회
+     * 
+     * JPA Subquery의 한계점은 from 절의 서브 쿼리는 지원하지 않는다.
+     * 하이버네이트 구현체를 사용하면 select절의 서브 쿼리는 지원한다.
+     * 
+     * from 절의 서브쿼리 해결방안
+     * 1. 서브쿼리를 join을 변경한다.
+     * 2. 어플리케이션을 쿼리를 2번 분리해서 실행한다.
+     * 3. nativeSQL을 사용한다.
+     */
+    @Test
+    public void subQuery(){
+
+        QMember memberSub = new QMember("memberSub");
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .where(member.age.eq(
+                        JPAExpressions
+                                .select(memberSub.age.max())
+                                .from(memberSub)
+                ))
+                .fetch();
+        
+        assertThat(result).extracting("age").containsExactly(40);
+    }
+
+    /**
+     * 나이가 평균이상인 회원 조회
+     */
+    @Test
+    public void subQueryGoe(){
+
+        QMember memberSub = new QMember("memberSub");
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .where(member.age.goe(
+                        JPAExpressions
+                                .select(memberSub.age.avg())
+                                .from(memberSub)
+                ))
+                .fetch();
+        
+        assertThat(result).extracting("age").containsExactly(30, 40);
+    }
+
+    /**
+     * 나이가 평균이상인 회원 조회
+     */
+    @Test
+    public void subQueryIn(){
+
+        QMember memberSub = new QMember("memberSub");
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .where(member.age.in(
+                        JPAExpressions
+                                .select(memberSub.age)
+                                .from(memberSub)
+                                .where(memberSub.age.gt(10))
+                ))
+                .fetch();
+        
+        assertThat(result).extracting("age").containsExactly(20, 30, 40);
+    }
+
+    @Test
+    public void selectSubQuery(){
+
+        QMember memberSub = new QMember("memberSub");
+
+        List<Tuple> result = queryFactory
+                .select(member.username,
+                        JPAExpressions
+                                .select(memberSub.age.avg())
+                                .from(memberSub))
+                .from(member)
+                .fetch();
+        
+        for(Tuple tuple: result){
+            System.out.println("tuple: " + tuple);
+        }
+    }
+
+    @Test
+    public void basicCase(){
+        List<String> result = queryFactory
+                .select(member.age
+                        .when(10).then("열살")
+                        .when(20).then("스무살").otherwise("기타"))
+                .from(member)
+                .fetch();
+    }
+
+    @Test
+    public void complecCase(){
+        List<String> result = queryFactory
+                .select(new CaseBuilder()
+                        .when(member.age.between(0, 20)).then("0~20살")
+                        .when(member.age.between(21, 30)).then("21~30살").otherwise("기타"))
+                .from(member)
+                .fetch();
+    }
+
+    @Test
+    public void constant(){
+        List<Tuple> result = queryFactory
+                .select(member.username, Expressions.constant("A"))
+                .from(member)
+                .fetch();
+    }
+
+    @Test
+    public void concat(){
+        List<String> result = queryFactory
+                .select(member.username.concat("_").concat(member.age.stringValue()))
+                .from(member)
+                .where(member.username.eq("member1"))
+                .fetch();
+    }
+
+    /// 중급 문법
+
+    @Test
+    public void simpleProtection(){
+        List<String> result = queryFactory
+                .select(member.username)
+                .from(member)
+                .fetch();
+    }
+
+    @Test
+    public void tupleProtection(){
+        /**
+         * tuple 자료형을 repository를 계층을 넘어 다른 곳까지 넘어가는 게 좋지 않다.
+         * 의존성이 생길 수도 있기 때문에 그렇다.
+         * 따라서 dto로 반환해서 넘기는 것이 좋다.
+         */
+        List<Tuple> result = queryFactory
+                .select(member.username, member.age)
+                .from(member)
+                .fetch();
+    }
+
+    @Test
+    public void findDtoByJPQL(){
+        // JPQL new operation을 활용
+        em.createQuery("select new study.querydsl.dto.MemberDto(m.username, m.age) from Member m", MemberDto.class).getResultList();
+    }
+
+    /**
+     * getter, setter를 통해서 값을 넣어준다.
+     */
+    @Test
+    public void findDtoBySetter(){
+        List<MemberDto> result = queryFactory
+                .select(Projections.bean(MemberDto.class, member.username, member.age))
+                .from(member)
+                .fetch();
+    }
+    
+    /**
+     * getter, setter 필요없이 필드에 바로 값을 넣는다.
+     */
+    @Test
+    public void findDtoByField(){
+        List<MemberDto> result = queryFactory
+                .select(Projections.fields(MemberDto.class, member.username, member.age))
+                .from(member)
+                .fetch();
+    }
+
+    /**
+     * 생성자를 통해서 만들어준다.
+     * 타입은 항상 맞춰서 넣어줘야 한다.
+     */
+    @Test
+    public void findDtoByConstructor(){
+        List<MemberDto> result = queryFactory
+                .select(Projections.constructor(MemberDto.class, member.username, member.age))
+                .from(member)
+                .fetch();
+
+        /**
+         * 생성자 기반으로 만들어지기 때문에 타입만 맞으면 상관없다.
+         */
+        List<UserDto> resultUser = queryFactory
+                .select(Projections.constructor(UserDto.class, member.username, member.age))
+                .from(member)
+                .fetch();
+    }
+
+    @Test
+    public void findUserDto(){
+        /**
+         * fields는 필드명이 동일해야 들어갈 수 있다.
+         * 아니면 null값이 들어간다. 따라서 as를 통해서 변수명을 맞추어야 한다.
+         */
+        List<UserDto> result = queryFactory
+                .select(Projections.fields(UserDto.class, member.username.as("name"), member.age))
+                .from(member)
+                .fetch();
+
+        /**
+         * 서브 쿼리로 채워넣기 위해서는 ExpressionUtils를 이용해야 한다.
+         */
+        QMember memberSub = new QMember("memberSub");
+        List<UserDto> result2 = queryFactory
+                .select(Projections.fields(UserDto.class, 
+                        member.username.as("name"), 
+                        ExpressionUtils.as(JPAExpressions
+                            .select(memberSub.age.max())
+                            .from(memberSub), "age"))
+                )
+                .from(member)
+                .fetch();
+    }
+
+    /**
+     * QueryProjection 어노테이션을 붙히고 compileQeurydsl을 해주면 QMemberDto가 생긴다.
+     *
+     * 단점
+     * 1. Q파일 생성
+     * 2. MemberDto가 Querydsl에 대한 라이브러리 의존성이 생긴다.(@QueryProjection을 빼야하는 경우가 생긴다면?)
+     */
+    @Test
+    public void findDtoByQueryProjection(){
+        List<MemberDto> result = queryFactory
+                .select(new QMemberDto(member.username, member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto memberDto : result) {
+            System.out.println("memberDto: " + memberDto);
+        }
+    }
+
+    /**
+     * 동적 쿼리를 다루는 방법
+     */
+    @Test
+    public void dynamicQuery_BooleanBuilder(){
+        String usernameParam = "member1";
+        Integer ageParam = 10;
+
+        List<Member> result = searchMember1(usernameParam, ageParam);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    private List<Member> searchMember1(String usernameParamCond, Integer ageParamCond) {
+
+        BooleanBuilder builder = new BooleanBuilder();
+        if(usernameParamCond != null){
+            builder.and(member.username.eq(usernameParamCond));
+        }
+
+        if(ageParamCond != null){
+            builder.and(member.age.eq(ageParamCond));
+        }
+
+        return queryFactory
+                .select(member)
+                .where(builder)
+                .fetch();
+    }
+
+    /**
+     * 여러개를 분리해서 조합을 할 수 있는게 가능하다. ex. allEq
+     */
+    @Test
+    public void dynamicQuery_WhereParam(){
+        String usernameParam = "member1";
+        Integer ageParam = 10;
+
+        List<Member> result = searchMember2(usernameParam, ageParam);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    private List<Member> searchMember2(String usernameParamCond, Integer ageParamCond) {
+
+        return queryFactory
+                .selectFrom(member)
+                .where(usernameEq(usernameParamCond), ageEq(ageParamCond))
+                .fetch();
+    }
+
+    private BooleanExpression ageEq(Integer ageParamCond) {
+        return ageParamCond == null ? null:member.age.eq(ageParamCond);
+    }
+
+
+    private BooleanExpression usernameEq(String usernameParamCond) {
+        return usernameParamCond == null?null:member.username.eq(usernameParamCond);
+    }
+
+    private BooleanExpression allEq(String usernameCond, Integer ageCond){
+        return usernameEq(usernameCond).and(ageEq(ageCond));
+    }
+
+    /**
+     * 벌크연산은 영속성 컨텍스트를 통해서 쿼리가 나가는것이 아닌
+     * 바로 DB에 실행되기 때문에 영속성 컨텍스트와 DB가 달라져 버린다.
+     */
+    @Test
+    @Commit
+    public void bulkUpdate(){
+        // member1 = 10 -> 비회원
+        // member2 = 20 -> 비회원
+        // member3 = 30 -> 유지
+        // member4 = 40 -> 유지
+
+        long count = queryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+
+        // 벌크연산은 초기화가 꼭 필요하다.
+        em.flush();
+        em.clear();
+
+        List<Member> result = queryFactory
+                .selectFrom(member)
+                .fetch();
+
+        for (Member member1 : result) {
+            System.out.println("member: " + member1);
+        }
+    }
+
+    @Test
+    public void bulkAdd(){
+        long count = queryFactory
+                .update(member)
+                .set(member.age, member.age.add(1))
+                .execute();
+    }
+
+    @Test
+    public void bulkDelete(){
+        long count = queryFactory
+                .delete(member)
+                .where(member.age.gt(18))
+                .execute();
+    }
+
+    /**
+     * SQL function은 JPA와 같이 Dialect에 등록된 내용만 호출할 수 있다.
+     */
+    @Test
+    public void sqlFunction(){
+        List<String> result = queryFactory
+                .select(Expressions.stringTemplate(
+                        "function('replace', {0}, {1}, {2})",
+                        member.username, "member", "M"))
+                .from(member)
+                .fetch();
+    }
+
+    @Test
+    public void sqlFunction2(){
+        List<String> result = queryFactory
+                .select(member.username)
+                .from(member)
+//                .where(member.username.eq(
+//                        Expressions.stringTemplate("function('lower', {0})", member.username)))
+                .where(member.username.eq(member.username.lower())) // ANSI 표준에 있는 함수들은 내장하고 있다.
+                .fetch();
     }
 }
