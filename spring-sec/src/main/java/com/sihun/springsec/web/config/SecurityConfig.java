@@ -1,6 +1,7 @@
 package com.sihun.springsec.web.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -21,7 +22,7 @@ import org.springframework.security.web.SecurityFilterChain;
  *
  * 참고 사이트: https://covenant.tistory.com/277
  */
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity(debug = true)    // debug 모드를 하게 되면 어떤 필터 체인을 타고 들어오는지 볼 수 있다.
 @EnableGlobalMethodSecurity(prePostEnabled = true)  // pre, post로 권한 체크를 하겠다.
 public class SecurityConfig {
 
@@ -83,12 +84,29 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        http.authorizeRequests((requests)->
-                requests.antMatchers("/").permitAll()
-                        .anyRequest().authenticated()
-        );
-        http.formLogin();
-        http.httpBasic();
+        // 어떤 request에 대해서 filter chain이 동작할 것인지 정하는 것
+//        http.antMatcher("/**");
+//        http.antMatcher("/api/**");
+
+//        http.authorizeRequests((requests)->
+//                requests.antMatchers("/").permitAll()
+//                        .anyRequest().authenticated()
+//        );
+//        http.formLogin();
+//        http.httpBasic();
+//        return http.build();
+
+        // 아래와 같이 disable 시켜 놓으면 filter들이 작동하지 않게 된다.
+        http
+                .headers().disable()
+                .csrf().disable()
+                .formLogin(login ->
+                        // alwaysUse 옵션을 false로 해야하는 이유는 다른 페이지에서 로그인때문에 접근이 막혔을 시에 해당 페이지로 다시 리다이렉트 해줘야 편하기 때문
+                        login.defaultSuccessUrl("/", false)
+                )
+                .logout().disable()
+                .requestCache().disable();
+
         return http.build();
     }
 }

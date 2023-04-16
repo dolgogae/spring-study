@@ -16,8 +16,7 @@ import javax.servlet.http.HttpServletResponse;
  * 
  * HTTPServletRequest
  * 서블릿이 개발자 대신 요청을 받아 객체를 생성해주는 것
- * 
- * 
+ *
  */
 @WebServlet(name = "helloServlet", urlPatterns = "/hello")
 public class HelloServlet extends HttpServlet{
