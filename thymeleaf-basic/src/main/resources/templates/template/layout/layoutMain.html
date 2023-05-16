@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--th:replace로 바꿔치기를 한다.-->
+<!--common_header에서 넘어간 변수명을 기준을 바꿔치기를 해준다.-->
+<head th:replace="template/layout/base :: common_header(~{::title},~{::link})">
+  <title>메인 타이틀</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/themes/smoothness/jquery-ui.css}">
 </head>
 <body>
-$END$
+메인 컨텐츠
 </body>
 </html>

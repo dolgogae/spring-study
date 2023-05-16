@@ -21,23 +21,23 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto createOrder(OrderDto orderDto) {
         orderDto.setOrderId(UUID.randomUUID().toString());
+        log.info(orderDto.toString());
         orderDto.setTotalPrice(orderDto.getUnitPrice() * orderDto.getQty());
 
         OrderEntity orderEntity = new OrderEntity().mappingOrderDto(orderDto);
         orderRepository.save(orderEntity);
 
-        OrderDto returnValue = mapper.map(orderEntity, OrderDto.class);
-
-        return returnValue;
+        return mapper.map(orderEntity, OrderDto.class);
     }
 
     @Override
     public OrderDto getOrderByOrderId(String orderId) {
-        return orderRepository.findByUserId();
+        OrderEntity orderEntity = orderRepository.findByOrderId(orderId);
+        return mapper.map(orderEntity, OrderDto.class);
     }
 
     @Override
     public Iterable<OrderEntity> getOrderByUserId(String userId) {
-        return null;
+        return orderRepository.findByUserId(userId);
     }
 }

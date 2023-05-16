@@ -1,15 +1,14 @@
-package com.example.catalogservice.entity.dto;
+package com.example.orderservice.entity.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.io.Serializable;
 
-@Data
-public class CatalogDto implements Serializable {
+@Data @ToString
+public class OrderDto implements Serializable {
     private String productId;
-    private String qty;
+    private Integer qty;
     private Integer unitPrice;
     private Integer totalPrice;
 

@@ -1,9 +1,28 @@
 server:
-  port: 9050
+  port: 8087
 
 spring:
-  security:
-    user:
-      name: user1
-      password: 1111
-      roles: USER
+  application:
+    name: indie-film
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      path: /h2-console
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:indiefilmdb
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
+token:
+  secret: indie_film_token
+
+logging:
+  level:
+    org.hibernate.type: trace

@@ -33,7 +33,9 @@
     <td th:text="${userStat.count}">1</td>
     <td th:text="${user.username}">username</td>
     <td th:switch="${user.age}">
-      <span th:case="10">10살</span> <span th:case="20">20살</span> <span th:case="*">기타</span>
+      <span th:case="10">10살</span>
+      <span th:case="20">20살</span>
+      <span th:case="*">기타</span>
     </td>
   </tr>
 </table>
